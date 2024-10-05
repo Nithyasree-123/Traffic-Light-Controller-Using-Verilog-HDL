@@ -96,7 +96,7 @@ endmodule
 
 ## OUTPUT:
 
-
+![image](https://github.com/user-attachments/assets/741ce599-f40b-43ad-83ee-5eed6cc06a3e)
 
 ## TESTBENCH FOR TRAFFIC LIGHT CONTROLLER:
 
@@ -147,6 +147,7 @@ endmodule
 
 ## OUTPUT:
 
+![image](https://github.com/user-attachments/assets/27d3e3ff-8508-48c8-becf-e55527448ba2)
 
 
 ## CONCLUSION:
