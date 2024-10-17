@@ -38,59 +38,50 @@ Capture screenshots of the waveform and save the simulation logs to include in y
 
 ~~~
 
-// traffic_light_controller.v
 module traffic_light_controller (
-    input wire clk,
-    input wire reset,
-    output reg [2:0] lights  // 3-bit output: [2]=Red, [1]=Yellow, [0]=Green
+    input wire clk,         // Clock signal
+    input wire rst,         // Reset signal
+    output reg [2:0] lights // 3-bit output for lights: [Green, Yellow, Red]
 );
-    // Define states
-    typedef enum reg [1:0] {
-        GREEN = 2'b00,
-        YELLOW = 2'b01,
-        RED = 2'b10
-    } state_t;
 
-    state_t current_state, next_state;
-    reg [3:0] counter;  // Timer counter
+    // State encoding
+    parameter GREEN  = 3'b001; // Green light
+    parameter YELLOW = 3'b010; // Yellow light
+    parameter RED    = 3'b100; // Red light
 
-    // State transition based on counter
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
-            current_state <= GREEN;
-            counter <= 0;
+    reg [1:0] state;           // Current state
+    reg [3:0] timer;           // Timer for light duration
+
+    // State transition logic
+    always @ (posedge clk or posedge rst) begin
+        if (rst) begin
+            state <= GREEN;    // Start with green light
+            timer <= 4'b0000;  // Reset timer
+            lights <= GREEN;    // Output green light
         end else begin
-            if (counter == 4'd9) begin
-                current_state <= next_state;
-                counter <= 0;
+            if (timer == 4'b1111) begin // Timer reached maximum
+                case (state)
+                    GREEN: begin
+                        state <= YELLOW; // Transition to yellow
+                        lights <= YELLOW; // Output yellow light
+                    end
+                    YELLOW: begin
+                        state <= RED; // Transition to red
+                        lights <= RED; // Output red light
+                    end
+                    RED: begin
+                        state <= GREEN; // Transition to green
+                        lights <= GREEN; // Output green light
+                    end
+                endcase
+                timer <= 4'b0000; // Reset timer
             end else begin
-                counter <= counter + 1;
+                timer <= timer + 1; // Increment timer
             end
         end
     end
-
-    // Next state logic and output control
-    always @(*) begin
-        case (current_state)
-            GREEN: begin
-                lights = 3'b001;  // Green light on
-                next_state = YELLOW;
-            end
-            YELLOW: begin
-                lights = 3'b010;  // Yellow light on
-                next_state = RED;
-            end
-            RED: begin
-                lights = 3'b100;  // Red light on
-                next_state = GREEN;
-            end
-            default: begin
-                lights = 3'b000;  // All lights off
-                next_state = GREEN;
-            end
-        endcase
-    end
 endmodule
+
 
 ~~~
 
